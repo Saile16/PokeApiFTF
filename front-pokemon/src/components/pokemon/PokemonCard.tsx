@@ -1,12 +1,34 @@
 import { Pokemon } from "../../types/pokemon";
+import { useFavorites } from "../../context/FavoritesContext";
 
 interface PokemonCardProps {
   pokemon: Pokemon;
 }
 
 export default function PokemonCard({ pokemon }: PokemonCardProps) {
+  const { isFavorite, addFavorite, removeFavorite } = useFavorites();
+  const isCurrentlyFavorite = isFavorite(pokemon.id);
+
+  const handleFavoriteClick = () => {
+    if (isCurrentlyFavorite) {
+      removeFavorite(pokemon.id);
+    } else {
+      addFavorite(pokemon);
+    }
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-md p-4">
+    <div className="bg-white rounded-lg shadow-md p-4 relative">
+      <button
+        onClick={handleFavoriteClick}
+        className="absolute top-2 right-2 text-2xl"
+        aria-label={
+          isCurrentlyFavorite ? "Remove from favorites" : "Add to favorites"
+        }
+      >
+        {isCurrentlyFavorite ? "★" : "☆"}
+      </button>
+
       <img
         src={pokemon.sprites.other["official-artwork"].front_default}
         alt={pokemon.name}
