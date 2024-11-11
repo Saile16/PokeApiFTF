@@ -10,7 +10,7 @@ export default function Favorites() {
   const handleGenerateCode = async () => {
     try {
       const code = await generateCode();
-      // Opcionalmente, podrías copiar el código al portapapeles
+      //Copiar al portapapeles por si el usuario quiere compartirlo
       navigator.clipboard.writeText(code);
     } catch (error) {
       setError("Error generating code");
@@ -24,7 +24,7 @@ export default function Favorites() {
       setLoadingCode("");
       setError("");
     } catch (error) {
-      setError("Error loading favorites");
+      setError("There are no favorites with this code");
     }
   };
 

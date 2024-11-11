@@ -278,16 +278,10 @@ npm test
 npm run coverage
 ```
 
-## 🚀 Future Improvements
+👨‍💻 Author
+[Alexander Saile Lucano Ramos]
 
-- Add pagination for search results
-- Implement caching for API responses
-- Add more advanced filtering options
-- Enhance error handling and user feedback
-- Add animations for favorite toggling
-- Implement dark mode
-- Add rate limiting for API endpoints
-- Implement data compression
+GitHub: [Saile16]
 
 ## 📄 License
 

@@ -1,41 +1,48 @@
 import { RequestHandler } from "express";
 import { FavoriteList } from "../models/FavoriteList";
 import { generateUniqueCode } from "../utils/codeGenerator";
+import { NotFoundError, BadRequestError } from "../middleware/errorHandler";
 
-export const createFavoriteList: RequestHandler = async (req, res) => {
+export const createFavoriteList: RequestHandler = async (req, res, next) => {
   try {
     const { pokemons } = req.body;
+
+    if (!pokemons || !Array.isArray(pokemons) || pokemons.length === 0) {
+      throw new BadRequestError("Invalid or empty pokemon list");
+    }
+
     const code = await generateUniqueCode();
 
-    console.log("1. DATOS RECIBIDOS:", JSON.stringify(pokemons, null, 2));
-
-    const favoriteList = new FavoriteList({
+    // Crear directamente el documento
+    await FavoriteList.create({
       code,
-      pokemons,
+      pokemons: pokemons,
     });
-
-    const saved = await favoriteList.save();
-    console.log("2. DATOS GUARDADOS:", JSON.stringify(saved, null, 2));
 
     res.status(201).json({ code });
   } catch (error) {
-    console.error("Error completo:", error);
-    res.status(500).json({ message: "Error creating favorite list" });
+    console.error("Create Error:", error);
+    next(error);
   }
 };
 
-export const getFavoriteList: RequestHandler = async (req, res) => {
+export const getFavoriteList: RequestHandler = async (req, res, next) => {
   try {
     const { code } = req.params;
-    const list = await FavoriteList.findOne({ code });
+
+    if (!code) {
+      throw new BadRequestError("Code is required");
+    }
+
+    const list = await FavoriteList.findOne({ code }).lean();
 
     if (!list) {
-      res.status(404).json({ message: "List not found" });
-      return;
+      throw new NotFoundError("Favorite list not found");
     }
 
     res.json(list);
   } catch (error) {
-    res.status(500).json({ message: "Error retrieving favorite list" });
+    console.error("Get Error:", error);
+    next(error);
   }
 };
