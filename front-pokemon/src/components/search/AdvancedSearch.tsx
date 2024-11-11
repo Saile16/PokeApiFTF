@@ -22,7 +22,6 @@ export default function AdvancedSearch() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Cargar tipos y habilidades al montar el componente
   useEffect(() => {
     const loadFilters = async () => {
       try {
@@ -41,30 +40,61 @@ export default function AdvancedSearch() {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!searchTerm && !selectedType && !selectedAbility) return;
+
     setIsLoading(true);
     setError("");
     setResults([]);
 
     try {
+      let searchResults: Pokemon[] = [];
+
       if (searchTerm) {
+        // Búsqueda por nombre
         const pokemon = await searchPokemon(searchTerm);
-        setResults([pokemon]);
+        searchResults = [pokemon];
       } else if (selectedType) {
-        const pokemonList = await getPokemonByType(selectedType);
-        // Limitamos a 20 resultados para no sobrecargar
+        // Búsqueda por tipo
+        const typeResults = await getPokemonByType(selectedType);
+        // Obtenemos los detalles de los primeros 20 Pokémon
         const detailedResults = await Promise.all(
-          pokemonList.slice(0, 20).map(async (p: any) => {
+          typeResults.slice(0, 20).map(async (p: any) => {
             const response = await searchPokemon(p.pokemon.name);
             return response;
           })
         );
-        setResults(detailedResults);
+        searchResults = detailedResults;
+      } else if (selectedAbility) {
+        // Búsqueda por habilidad
+        searchResults = await searchPokemonByAbility(selectedAbility);
       }
+
+      setResults(searchResults);
     } catch (err) {
       setError("Error searching Pokemon");
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Limpiar otros campos cuando uno es seleccionado
+  const handleNameChange = (value: string) => {
+    setSearchTerm(value);
+    setSelectedType("");
+    setSelectedAbility("");
+  };
+
+  const handleTypeChange = (value: string) => {
+    setSelectedType(value);
+    setSearchTerm("");
+    setSelectedAbility("");
+  };
+
+  const handleAbilityChange = (value: string) => {
+    setSelectedAbility(value);
+    setSearchTerm("");
+    setSelectedType("");
   };
 
   return (
@@ -74,15 +104,16 @@ export default function AdvancedSearch() {
           <input
             type="text"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleNameChange(e.target.value)}
             placeholder="Search by name..."
             className="flex-1 px-4 py-2 border rounded-lg"
           />
 
           <select
             value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
+            onChange={(e) => handleTypeChange(e.target.value)}
             className="px-4 py-2 border rounded-lg"
+            aria-label="Select Pokémon type"
           >
             <option value="">Select Type</option>
             {types.map((type) => (
@@ -94,8 +125,9 @@ export default function AdvancedSearch() {
 
           <select
             value={selectedAbility}
-            onChange={(e) => setSelectedAbility(e.target.value)}
+            onChange={(e) => handleAbilityChange(e.target.value)}
             className="px-4 py-2 border rounded-lg"
+            aria-label="Select Pokémon ability"
           >
             <option value="">Select Ability</option>
             {abilities.map((ability) => (
@@ -108,7 +140,9 @@ export default function AdvancedSearch() {
 
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={
+            isLoading || (!searchTerm && !selectedType && !selectedAbility)
+          }
           className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-blue-300"
         >
           {isLoading ? "Searching..." : "Search"}
@@ -117,7 +151,7 @@ export default function AdvancedSearch() {
 
       {error && <div className="text-red-500 text-center my-4">{error}</div>}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
         {results.map((pokemon) => (
           <PokemonCard key={pokemon.id} pokemon={pokemon} />
         ))}

@@ -8,7 +8,7 @@ const typeSchema = new mongoose.Schema(
     },
   },
   { _id: false }
-); // Importante: deshabilitamos el _id automático para los subdocumentos
+);
 
 // Definimos el esquema para la habilidad
 const abilitySchema = new mongoose.Schema(
@@ -16,6 +16,7 @@ const abilitySchema = new mongoose.Schema(
     ability: {
       name: String,
     },
+    is_hidden: Boolean, // Añadimos el campo is_hidden
   },
   { _id: false }
 );
@@ -53,7 +54,7 @@ const favoriteListSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-    expires: 604800,
+    expires: 604800, // 7 días
   },
 });
 

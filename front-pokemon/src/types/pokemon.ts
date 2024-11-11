@@ -12,6 +12,7 @@ export interface Pokemon {
     ability: {
       name: string;
     };
+    is_hidden: boolean;
   }[];
   sprites: {
     // Imágenes (solo las que usamos)

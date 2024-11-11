@@ -12,7 +12,9 @@ interface FavoritesContextType {
   shareCode: string | null;
 }
 
-const FavoritesContext = createContext<FavoritesContextType | null>(null);
+export const FavoritesContext = createContext<FavoritesContextType | null>(
+  null
+);
 
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
   const [favorites, setFavorites] = useState<Pokemon[]>([]);
@@ -48,6 +50,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
           ability: {
             name: ability.ability.name,
           },
+          is_hidden: ability.is_hidden,
         })),
         sprites: {
           front_default: pokemon.sprites.front_default,
