@@ -16,7 +16,7 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
       addFavorite(pokemon);
     }
   };
-
+  console.log(pokemon);
   return (
     <div className="bg-white rounded-lg shadow-md p-4 relative">
       <button
@@ -31,10 +31,9 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
 
       <img
         src={pokemon.sprites.other["official-artwork"].front_default}
-        alt={pokemon.name}
         className="w-full h-48 object-contain"
       />
-      <h3 className="text-xl font-bold capitalize mt-2">{pokemon.name}</h3>
+      <h3 className="text-xl font-bold capitalize mt-2">{pokemon.name}???? </h3>
       <div className="flex gap-2 mt-2">
         {pokemon.types.map((type) => (
           <span

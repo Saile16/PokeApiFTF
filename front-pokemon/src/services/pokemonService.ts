@@ -46,3 +46,19 @@ export const getPokemonByType = async (type: string) => {
     throw error;
   }
 };
+
+export const searchPokemonByAbility = async (ability: string) => {
+  try {
+    const response = await axios.get(`${API_URL}/ability/${ability}`);
+    // Obtenemos los primeros 20 Pokémon con esta habilidad
+    const pokemonPromises = response.data.pokemon
+      .slice(0, 20)
+      .map((p: any) => axios.get(p.pokemon.url));
+
+    const pokemonResponses = await Promise.all(pokemonPromises);
+    return pokemonResponses.map((response) => response.data);
+  } catch (error) {
+    console.error("Error searching Pokemon by ability:", error);
+    throw error;
+  }
+};

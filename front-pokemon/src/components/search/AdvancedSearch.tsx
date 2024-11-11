@@ -4,6 +4,7 @@ import {
   getPokemonTypes,
   getPokemonAbilities,
   getPokemonByType,
+  searchPokemonByAbility,
 } from "../../services/pokemonService";
 
 import type { Pokemon } from "../../types/pokemon";
